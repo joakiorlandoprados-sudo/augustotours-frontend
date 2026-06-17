@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tour {
+  id             String   @id @default(cuid())
+  name           String
+  slug           String   @unique
+  category       Category
+  shortDesc      String
+  fullDesc       String
+  duration       String
+  schedule       String
+  includes       String[]
+  excludes       String[]
+  extras         String?
+  notes          String?
+  priceAdult     Float?
+  priceChild     Float?
+  childPolicy    String?
+  paymentMethods String[]
+  featured       Boolean  @default(false)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  leads          Lead[]
+}
+
+model Lead {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  phone      String?
+  tourId     String?
+  tour       Tour?    @relation(fields: [tourId], references: [id])
+  tourName   String?
+  date       String?
+  passengers Int?
+  message    String?
+  source     String   @default("chatbot")
+  createdAt  DateTime @default(now())
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  sessionId String
+  role      String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([sessionId])
+}
+
+enum Category {
+  EXCURSION
+  CITY
+  AVENTURA
+  NAUTICO
+  CULTURAL
+}
