@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Instagram, Mail, MessageCircle } from "lucide-react";
-import { whatsappLink, mailtoLink } from "@/lib/utils";
 
 export function Footer() {
   return (
@@ -55,38 +54,33 @@ export function Footer() {
           <p className="mb-3 font-semibold uppercase tracking-wider text-sm text-ocean-light">
             Contacto
           </p>
-          <ul className="space-y-3 text-sm text-ocean-pale">
-            <li className="flex items-center gap-2">
-              <a
-                href={whatsappLink("Hola AugustoTours! Me gustaría recibir información sobre sus tours.")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 hover:text-neutral-white"
-              >
-                <MessageCircle size={16} /> WhatsApp AugustoTours
-              </a>
-            </li>
-            <li className="flex items-center gap-2">
-              <a
-                href="mailto:joakiorlandoprados@gmail.com"
-                aria-label="Enviar email"
-                className="inline-flex items-center gap-2 hover:text-neutral-white"
-              >
-                <Mail size={16} />
-              </a>
-            </li>
-            <li className="flex items-center gap-3 pt-2">
-              <a
-                href="https://www.instagram.com/augusto.tours"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="hover:text-neutral-white"
-              >
-                <Instagram size={20} />
-              </a>
-            </li>
-          </ul>
+          <div className="flex items-center gap-3">
+            <a
+              href="https://wa.me/5521985436387"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="WhatsApp"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-neutral-white transition-all duration-200 hover:scale-105 hover:bg-white/20"
+            >
+              <MessageCircle size={18} />
+            </a>
+            <a
+              href="mailto:joakiorlandoprados@gmail.com"
+              aria-label="Email"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-neutral-white transition-all duration-200 hover:scale-105 hover:bg-white/20"
+            >
+              <Mail size={18} />
+            </a>
+            <a
+              href="https://instagram.com/augusto.tours"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-neutral-white transition-all duration-200 hover:scale-105 hover:bg-white/20"
+            >
+              <Instagram size={18} />
+            </a>
+          </div>
         </div>
       </div>
 
