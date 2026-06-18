@@ -12,14 +12,21 @@ type Props = {
   /** Tiempo entre el resto de las imágenes del ciclo. */
   intervalMs?: number;
   sizes?: string;
+  /**
+   * Si se provee, el estado de reproducción se controla desde fuera.
+   * - `true`  → reproduce el ciclo.
+   * - `false` → pausa y vuelve a la primera imagen.
+   * Si se omite, el componente gestiona el estado internamente con hover (desktop).
+   */
+  playing?: boolean;
 };
 
 /**
  * Cross-fade entre varias imágenes.
  * - En desktop: controlado por hover (reproduce y vuelve al salir).
- * - En mobile / touch: auto-reproducción cada `intervalMs` sin necesidad de
- *   interacción, ya que hover no existe.
- * - En reposo (sin hover, desktop): muestra la primera imagen, quieta.
+ * - En mobile / touch: controlado por la prop `playing`. El padre decide cuándo
+ *   activar / desactivar el carrusel (tocar la card, tocar fuera, etc.).
+ * - En reposo: muestra la primera imagen, quieta.
  * - Solo la primera se carga con `priority` y `eager` (LCP).
  * - Si hay una sola imagen, se renderiza estática (sin JS corriendo).
  */
@@ -30,36 +37,19 @@ export function TourImageFade({
   firstIntervalMs = 500,
   intervalMs = 2000,
   sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw",
+  playing,
 }: Props) {
   const [active, setActive] = useState(0);
   const [hover, setHover] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
-  // Detección de mobile / touch: innerWidth < 768 o dispositivo touch.
+  // Modo controlado (padre maneja el estado) vs modo interno (solo hover).
+  const controlled = playing !== undefined;
+  const shouldPlay = controlled ? playing : hover;
+
+  // Cuando se desactiva, volver a la primera imagen.
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const detectMobile = () => {
-      setIsMobile(
-        window.innerWidth < 768 ||
-          ("ontouchstart" in window) ||
-          (navigator.maxTouchPoints ?? 0) > 0
-      );
-    };
-
-    detectMobile();
-    window.addEventListener("resize", detectMobile);
-    // Una vez que el usuario toca la pantalla, también activamos autoplay.
-    window.addEventListener("touchstart", detectMobile, { passive: true });
-
-    return () => {
-      window.removeEventListener("resize", detectMobile);
-      window.removeEventListener("touchstart", detectMobile);
-    };
-  }, []);
-
-  // En mobile el carrusel reproduce solo; en desktop solo con hover.
-  const shouldPlay = isMobile ? true : hover;
+    if (!shouldPlay) setActive(0);
+  }, [shouldPlay]);
 
   useEffect(() => {
     if (!shouldPlay || images.length < 2) return;
@@ -90,9 +80,9 @@ export function TourImageFade({
   return (
     <div
       className={`relative overflow-hidden ${className}`}
-      onMouseEnter={() => !isMobile && setHover(true)}
+      onMouseEnter={() => !controlled && setHover(true)}
       onMouseLeave={resetOnLeave}
-      onFocus={() => !isMobile && setHover(true)}
+      onFocus={() => !controlled && setHover(true)}
       onBlur={resetOnLeave}
     >
       {images.map((src, idx) => (
