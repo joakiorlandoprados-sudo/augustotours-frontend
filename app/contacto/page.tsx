@@ -210,13 +210,13 @@ function ContactForm() {
             </li>
             <li className="flex items-start gap-3">
               <a
-                href={mailtoLink("Consulta desde la web")}
+                href="mailto:joakiorlandoprados@gmail.com"
+                aria-label="Enviar email"
                 className="flex items-start gap-3 transition hover:opacity-80"
               >
                 <Mail size={18} className="mt-0.5 text-ocean-mid" />
                 <div>
                   <p className="font-semibold text-neutral-dark">Email</p>
-                  <p className="text-neutral-mid">joakiorlandoprados@gmail.com</p>
                 </div>
               </a>
             </li>

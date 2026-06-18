@@ -68,10 +68,11 @@ export function Footer() {
             </li>
             <li className="flex items-center gap-2">
               <a
-                href={mailtoLink("Consulta desde la web")}
+                href="mailto:joakiorlandoprados@gmail.com"
+                aria-label="Enviar email"
                 className="inline-flex items-center gap-2 hover:text-neutral-white"
               >
-                <Mail size={16} /> joakiorlandoprados@gmail.com
+                <Mail size={16} />
               </a>
             </li>
             <li className="flex items-center gap-3 pt-2">

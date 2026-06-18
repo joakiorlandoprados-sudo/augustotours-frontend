@@ -15,10 +15,11 @@ type Props = {
 };
 
 /**
- * Cross-fade entre varias imágenes controlado por hover.
- * - En reposo: muestra la primera imagen, quieta.
- * - En hover: las imágenes se van cruzando cada `intervalMs` y hacen zoom suave.
- * - Al salir del hover: vuelve a la primera imagen.
+ * Cross-fade entre varias imágenes.
+ * - En desktop: controlado por hover (reproduce y vuelve al salir).
+ * - En mobile / touch: auto-reproducción cada `intervalMs` sin necesidad de
+ *   interacción, ya que hover no existe.
+ * - En reposo (sin hover, desktop): muestra la primera imagen, quieta.
  * - Solo la primera se carga con `priority` y `eager` (LCP).
  * - Si hay una sola imagen, se renderiza estática (sin JS corriendo).
  */
@@ -32,9 +33,36 @@ export function TourImageFade({
 }: Props) {
   const [active, setActive] = useState(0);
   const [hover, setHover] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detección de mobile / touch: innerWidth < 768 o dispositivo touch.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const detectMobile = () => {
+      setIsMobile(
+        window.innerWidth < 768 ||
+          ("ontouchstart" in window) ||
+          (navigator.maxTouchPoints ?? 0) > 0
+      );
+    };
+
+    detectMobile();
+    window.addEventListener("resize", detectMobile);
+    // Una vez que el usuario toca la pantalla, también activamos autoplay.
+    window.addEventListener("touchstart", detectMobile, { passive: true });
+
+    return () => {
+      window.removeEventListener("resize", detectMobile);
+      window.removeEventListener("touchstart", detectMobile);
+    };
+  }, []);
+
+  // En mobile el carrusel reproduce solo; en desktop solo con hover.
+  const shouldPlay = isMobile ? true : hover;
 
   useEffect(() => {
-    if (!hover || images.length < 2) return;
+    if (!shouldPlay || images.length < 2) return;
 
     // La primera transición usa `firstIntervalMs` (entrada rápida al ciclo),
     // las siguientes usan `intervalMs` (cadencia del resto).
@@ -50,7 +78,7 @@ export function TourImageFade({
       clearTimeout(initialId);
       clearInterval(id);
     };
-  }, [hover, images.length, firstIntervalMs, intervalMs]);
+  }, [shouldPlay, images.length, firstIntervalMs, intervalMs]);
 
   const resetOnLeave = () => {
     setHover(false);
@@ -62,9 +90,9 @@ export function TourImageFade({
   return (
     <div
       className={`relative overflow-hidden ${className}`}
-      onMouseEnter={() => setHover(true)}
+      onMouseEnter={() => !isMobile && setHover(true)}
       onMouseLeave={resetOnLeave}
-      onFocus={() => setHover(true)}
+      onFocus={() => !isMobile && setHover(true)}
       onBlur={resetOnLeave}
     >
       {images.map((src, idx) => (
@@ -78,7 +106,7 @@ export function TourImageFade({
           loading={idx === 0 ? "eager" : "lazy"}
           className={`object-cover transition-[opacity,transform] duration-700 ease-out ${
             idx === active ? "opacity-100" : "opacity-0"
-          } ${hover ? "scale-110" : "scale-100"}`}
+          } ${shouldPlay ? "scale-110" : "scale-100"}`}
         />
       ))}
     </div>
