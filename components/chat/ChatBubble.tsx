@@ -17,7 +17,7 @@ export function ChatBubble({
       className={`flex ${isUser ? "justify-end" : "justify-start"}`}
     >
       <div
-        className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-soft ${
+        className={`max-w-[85%] whitespace-pre-line rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-soft ${
           isUser
             ? "rounded-br-sm bg-ocean-mid text-neutral-white"
             : "rounded-bl-sm bg-neutral-white text-neutral-dark"
