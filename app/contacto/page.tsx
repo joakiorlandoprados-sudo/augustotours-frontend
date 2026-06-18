@@ -4,7 +4,6 @@ import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Send, CheckCircle2, MessageCircle, Mail, MapPin } from "lucide-react";
-import { whatsappLink, mailtoLink } from "@/lib/utils";
 
 function ContactForm() {
   const params = useSearchParams();
@@ -193,13 +192,13 @@ function ContactForm() {
           <h3 className="font-display text-lg text-ocean-deep">
             Otras formas de contactarnos
           </h3>
-          <ul className="mt-4 space-y-4 text-sm">
-            <li className="flex items-start gap-3">
+          <ul className="mt-4 space-y-2 text-sm">
+            <li>
               <a
-                href={whatsappLink("Hola AugustoTours! Me gustaría recibir información sobre sus tours.")}
+                href="https://wa.me/5521985436387"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-start gap-3 transition hover:opacity-80"
+                className="flex items-start gap-3 rounded-xl p-2 -m-2 transition-colors hover:bg-neutral-light"
               >
                 <MessageCircle size={18} className="mt-0.5 text-ocean-mid" />
                 <div>
@@ -208,19 +207,19 @@ function ContactForm() {
                 </div>
               </a>
             </li>
-            <li className="flex items-start gap-3">
+            <li>
               <a
                 href="mailto:joakiorlandoprados@gmail.com"
-                aria-label="Enviar email"
-                className="flex items-start gap-3 transition hover:opacity-80"
+                className="flex items-start gap-3 rounded-xl p-2 -m-2 transition-colors hover:bg-neutral-light"
               >
                 <Mail size={18} className="mt-0.5 text-ocean-mid" />
                 <div>
                   <p className="font-semibold text-neutral-dark">Email</p>
+                  <p className="text-neutral-mid">Te respondemos en menos de 24 hs</p>
                 </div>
               </a>
             </li>
-            <li className="flex items-start gap-3">
+            <li className="flex items-start gap-3 p-2 -m-2">
               <MapPin size={18} className="mt-0.5 text-ocean-mid" />
               <div>
                 <p className="font-semibold text-neutral-dark">Base operativa</p>
