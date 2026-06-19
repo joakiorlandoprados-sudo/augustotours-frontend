@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Loader2 } from "lucide-react";
+import { MessageCircle, X } from "lucide-react";
 import { ChatBubble } from "./ChatBubble";
 import { ChatInput } from "./ChatInput";
 
@@ -64,7 +64,11 @@ export function ChatWidget() {
     if (!text || streaming) return;
     setInput("");
 
-    const next: Msg[] = [...messages, { role: "user", content: text }];
+    const next: Msg[] = [
+      ...messages,
+      { role: "user", content: text },
+      { role: "assistant", content: "" },
+    ];
     setMessages(next);
     setStreaming(true);
 
@@ -87,7 +91,6 @@ export function ChatWidget() {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let acc = "";
-      setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
 
       while (true) {
         const { value, done } = await reader.read();
@@ -111,14 +114,24 @@ export function ChatWidget() {
         }
       }
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "Disculpá, tuve un problema para conectarme. ¿Podés intentar de nuevo en unos segundos?",
-        },
-      ]);
+      setMessages((prev) => {
+        const copy = [...prev];
+        const last = copy[copy.length - 1];
+        if (last && last.role === "assistant" && last.content === "") {
+          copy[copy.length - 1] = {
+            role: "assistant",
+            content:
+              "Disculpá, tuve un problema para conectarme. ¿Podés intentar de nuevo en unos segundos?",
+          };
+        } else {
+          copy.push({
+            role: "assistant",
+            content:
+              "Disculpá, tuve un problema para conectarme. ¿Podés intentar de nuevo en unos segundos?",
+          });
+        }
+        return copy;
+      });
     } finally {
       setStreaming(false);
     }
@@ -169,15 +182,18 @@ export function ChatWidget() {
               ref={scrollRef}
               className="chat-scroll flex-1 space-y-3 overflow-y-auto bg-neutral-light p-4"
             >
-              {messages.map((m, i) => (
-                <ChatBubble key={i} role={m.role} content={m.content} />
-              ))}
-              {streaming && messages[messages.length - 1]?.content === "" && (
-                <div className="flex items-center gap-2 text-xs text-neutral-mid">
-                  <Loader2 size={14} className="animate-spin text-ocean-mid" />
-                  AugustoBot está escribiendo...
-                </div>
-              )}
+              {messages.map((m, i) => {
+                const isLast = i === messages.length - 1;
+                const typing = streaming && isLast && m.role === "assistant" && m.content === "";
+                return (
+                  <ChatBubble
+                    key={i}
+                    role={m.role}
+                    content={m.content}
+                    typing={typing}
+                  />
+                );
+              })}
             </div>
 
             <ChatInput
